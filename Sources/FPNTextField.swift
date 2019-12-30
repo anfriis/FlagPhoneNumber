@@ -20,16 +20,28 @@ open class FPNTextField: UITextField {
 	private var flagWidthConstraint: NSLayoutConstraint?
 	private var flagHeightConstraint: NSLayoutConstraint?
 
+    private let leftViewTrailingSpace: CGFloat = 8
+
 	/// The size of the leftView
 	private var leftViewSize: CGSize {
-		let width = flagButtonSize.width + getWidth(text: phoneCodeTextField.text!)
+		let width = flagButtonSize.width + getWidth(text: phoneCodeTextField.text!) + self.leftViewTrailingSpace
 		let height = bounds.height
 
 		return CGSize(width: width, height: height)
 	}
 
-	private var phoneCodeTextField: UITextField = UITextField()
+    private lazy var phoneCodeTextField: UITextField = {
+        let textField = UITextField()
+        textField.font = font
+        textField.translatesAutoresizingMaskIntoConstraints = false
 
+        let tap = UITapGestureRecognizer(target: self, action: #selector(displayCountries))
+        textField.addGestureRecognizer(tap)
+        textField.isUserInteractionEnabled = true
+        
+        return textField
+    }()
+    
 	private lazy var phoneUtil: NBPhoneNumberUtil = NBPhoneNumberUtil()
 	private var nbPhoneNumber: NBPhoneNumber?
 	private var formatter: NBAsYouTypeFormatter?
@@ -101,7 +113,6 @@ open class FPNTextField: UITextField {
 		leftViewMode = .always
 
 		setupFlagButton()
-		setupPhoneCodeTextField()
 		setupLeftView()
 
 		keyboardType = .numberPad
@@ -122,12 +133,6 @@ open class FPNTextField: UITextField {
 		flagButton.addTarget(self, action: #selector(displayCountries), for: .touchUpInside)
 		flagButton.translatesAutoresizingMaskIntoConstraints = false
 		flagButton.imageEdgeInsets = UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5)
-	}
-
-	private func setupPhoneCodeTextField() {
-		phoneCodeTextField.font = font
-		phoneCodeTextField.isUserInteractionEnabled = false
-		phoneCodeTextField.translatesAutoresizingMaskIntoConstraints = false
 	}
 
 	private func setupLeftView() {
